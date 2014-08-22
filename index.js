@@ -1,4 +1,30 @@
 'use strict';
+var useragent = require('useragent');
+
+function formatUA(UA) {
+	var output = UA.family;
+
+	if (UA.major) {
+		output += ' ' + UA.major;
+	}
+
+	if (UA.os && UA.os.family) {
+		output += ' (' + UA.os.family;
+
+		if (UA.os.major) {
+			output += ' ' + UA.os.major;
+
+			if (UA.os.minor) {
+				output += '.' + UA.os.minor;
+			}
+		}
+
+		output += ')';
+	}
+
+	return output;
+}
+
 var TAPE = function(baseReporterDecorator, formatError) {
 	baseReporterDecorator(this);
 
@@ -13,7 +39,7 @@ var TAPE = function(baseReporterDecorator, formatError) {
 
 	this.onBrowserStart = function(browser) {
 		this.suites[browser.id] = {
-			name: browser.name,
+			name: formatUA(useragent.parse(browser.fullName)),
 			specs: []
 		};
 	};
@@ -39,8 +65,10 @@ var TAPE = function(baseReporterDecorator, formatError) {
 			}
 
 			msg.push(
+				suite.name,
+				'::',
 				spec.suite.join(' '),
-				'—',
+				'::',
 				spec.description
 			);
 
@@ -105,7 +133,7 @@ var TAPE = function(baseReporterDecorator, formatError) {
 		this.write('# fail ' + this.failures + '\n');
 
 		if (!this.failures) {
-			this.write('# ok');
+			this.write('# ok\n');
 		}
 	};
 };
