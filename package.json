@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/terinjokes/karma-tape.git"
+    "url": "https://github.com/terinjokes/karma-tape-reporter.git"
   },
   "keywords": [
     "karma-plugin",
@@ -19,9 +19,9 @@
   "author": "Terin Stock <terinjokes@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/terinjokes/karma-tape/issues"
+    "url": "https://github.com/terinjokes/karma-tape-reporter/issues"
   },
-  "homepage": "https://github.com/terinjokes/karma-tape",
+  "homepage": "https://github.com/terinjokes/karma-tape-reporter",
   "dependencies": {
     "useragent": "^2.0.9"
   }
