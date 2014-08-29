@@ -1,5 +1,6 @@
 'use strict';
 var formatUA = require('./formatUA');
+var printf = require('printf');
 
 var TAPE = function(baseReporterDecorator, formatError) {
 	baseReporterDecorator(this);
@@ -10,7 +11,7 @@ var TAPE = function(baseReporterDecorator, formatError) {
 		this.failures = 0;
 		this.skips = 0;
 		this.idx = 1;
-		this.write('TAP version 13\n');
+		this.writeln('TAP version 13');
 	};
 
 	this.onBrowserStart = function(browser) {
@@ -28,34 +29,25 @@ var TAPE = function(baseReporterDecorator, formatError) {
 			return;
 		}
 
-		this.write('# ' + suite.name + '\n');
+		this.writeln(printf('# %s', suite.name));
 
 		suite.specs.forEach(function(spec) {
-			var msg = [
-					spec.result,
-					this.idx++
-				];
+			var properties = {
+				status: spec.result,
+				index: this.idx++,
+				browser: suite.name,
+				suites: spec.suite.join(' '),
+				description: spec.description
+			};
 
-			if (spec.skipped) {
-				msg.push('# skip');
-			}
-
-			msg.push(
-				suite.name,
-				'::',
-				spec.suite.join(' '),
-				'::',
-				spec.description
-			);
-
-			this.write(msg.join(' ') + '\n');
+			this.writeln(printf('%(status)s %(index)d ' + (spec.skipped ? '# skip ' : '') + '%(browser)s :: %(suites)s :: %(description)s', properties));
 
 			if (spec.failures && spec.failures.length > 0) {
-				this.write('  ---\n');
+				this.writeln('  ---');
 				spec.failures.forEach(function(failure) {
-					this.write(failure);
+					this.writeln(failure);
 				}, this);
-				this.write('  ...\n');
+				this.writeln('  ...');
 			}
 		}, this);
 
@@ -100,17 +92,21 @@ var TAPE = function(baseReporterDecorator, formatError) {
 	};
 
 	this.onRunComplete = function() {
-		this.write('\n1..' + this.total + '\n');
-		this.write('# tests ' + this.total + '\n');
-		this.write('# pass ' + (this.total - this.failures) + '\n');
+		this.writeln(printf('\n1..%d', this.total));
+		this.writeln(printf('# tests %d', this.total));
+		this.writeln(printf('# pass %d', this.total - this.failures));
 		if (this.skips) {
-			this.write('# skip ' + this.skips + '\n');
+			this.writeln(printf('# skip %d', this.skips));
 		}
-		this.write('# fail ' + this.failures + '\n');
+		this.writeln(printf('# fail %d', this.failures));
 
 		if (!this.failures) {
-			this.write('# ok\n');
+			this.writeln('# ok');
 		}
+	};
+
+	this.writeln = function(str) {
+		return this.write(str + '\n');
 	};
 };
 

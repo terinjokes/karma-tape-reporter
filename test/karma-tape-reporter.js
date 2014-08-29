@@ -4,7 +4,7 @@ var test = require('tape'),
 		Reporter = require('../')['reporter:tape'][1];
 
 function formatError(error, indent) {
-	return indent + error + '\n';
+	return indent + error;
 }
 
 var mosaic = {id: 'id', name: 'Mosaic', fullName: 'NCSA Mosaic/1.0 (X11;SunOS 4.1.4 sun4m)'};
