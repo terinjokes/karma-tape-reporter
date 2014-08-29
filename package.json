@@ -32,8 +32,8 @@
   },
   "scripts": {
     "codeclimate": "cat ./coverage/lcov.info|codeclimate",
-    "coverage": "istanbul cover node_modules/argg tests/*.js --report lcovonly",
-    "coverage-html": "istanbul cover node_modules/argg tests/*.js --report html",
+    "coverage": "istanbul cover node_modules/argg test/*.js --report lcovonly",
+    "coverage-html": "istanbul cover node_modules/argg test/*.js --report html",
     "rm": "rimraf ./coverage",
     "test": "npm run coverage && npm run rm",
     "test-report": "npm run coverage && npm run codeclimate && npm run rm"
