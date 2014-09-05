@@ -1,5 +1,6 @@
 'use strict';
 var formatUA = require('./formatUA');
+var yamlish = require('yamlish');
 var printf = require('printf');
 
 var TAPE = function(baseReporterDecorator, formatError) {
@@ -43,10 +44,10 @@ var TAPE = function(baseReporterDecorator, formatError) {
 			this.writeln(printf('%(status)s %(index)d ' + (spec.skipped ? '# skip ' : '') + '%(browser)s :: %(suites)s :: %(description)s', properties));
 
 			if (spec.failures && spec.failures.length > 0) {
-				this.writeln('  ---');
-				spec.failures.forEach(function(failure) {
-					this.writeln(failure);
-				}, this);
+				this.write('  ---');
+				this.writeln(yamlish.encode({
+					failures: spec.failures
+				}));
 				this.writeln('  ...');
 			}
 		}, this);
