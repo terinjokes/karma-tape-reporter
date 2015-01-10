@@ -1,6 +1,7 @@
 'use strict';
 var formatUA = require('./formatUA');
-var yamlish = require('yamlish');
+var yaml = require('js-yaml');
+var indent = require('indent-string');
 var printf = require('printf');
 
 var TAPE = function(baseReporterDecorator, formatError) {
@@ -44,10 +45,10 @@ var TAPE = function(baseReporterDecorator, formatError) {
 			this.writeln(printf('%(status)s %(index)d ' + (spec.skipped ? '# skip ' : '') + '%(browser)s :: %(suites)s :: %(description)s', properties));
 
 			if (spec.failures && spec.failures.length > 0) {
-				this.write('  ---');
-				this.writeln(yamlish.encode({
+				this.writeln('  ---');
+				this.writeln(indent(yaml.safeDump({
 					failures: spec.failures
-				}));
+				}), ' ', 4));
 				this.writeln('  ...');
 			}
 		}, this);
@@ -74,7 +75,7 @@ var TAPE = function(baseReporterDecorator, formatError) {
 		};
 
 		result.log.forEach(function(err) {
-			spec.failures.push(formatError(err, '    '));
+			spec.failures.push(formatError(err, ''));
 		});
 
 		suite.specs.push(spec);

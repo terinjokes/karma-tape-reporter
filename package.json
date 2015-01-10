@@ -7,9 +7,9 @@
     "url": "https://github.com/terinjokes/karma-tape-reporter/issues"
   },
   "dependencies": {
+    "js-yaml": "git+https://github.com/terinjokes/js-yaml.git#block-literal-newlines-preserved",
     "printf": ">=0.2.0 <0.3.0-0",
-    "useragent": ">=2.0.9 <3.0.0-0",
-    "yamlish": "0.0.6"
+    "useragent": ">=2.0.9 <3.0.0-0"
   },
   "devDependencies": {
     "argg": "0.0.1",

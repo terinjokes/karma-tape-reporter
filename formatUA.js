@@ -12,11 +12,11 @@ module.exports = function formatUA(str) {
 	if (UA.os && UA.os.family && UA.os.family !== 'Other') {
 		output += ' (' + UA.os.family;
 
-		if (UA.os.major) {
+		if (UA.os.major && UA.os.major > 0) {
 			output += ' ' + UA.os.major;
 
 			/* istanbul ignore else: I don't know how to get useragent to have an OS major without an OS minor */
-			if (UA.os.minor) {
+			if (UA.os.minor && UA.os.major > 0) {
 				output += '.' + UA.os.minor;
 			}
 		}
