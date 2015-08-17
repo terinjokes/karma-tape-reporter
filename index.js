@@ -1,10 +1,11 @@
 'use strict';
+var fs = require('fs');
 var formatUA = require('./formatUA');
 var yaml = require('js-yaml');
 var indent = require('indent-string');
 var printf = require('printf');
 
-var TAPE = function(baseReporterDecorator, formatError) {
+var TAPE = function(baseReporterDecorator, formatError, config) {
 	baseReporterDecorator(this);
 
 	this.onRunStart = function() {
@@ -13,6 +14,16 @@ var TAPE = function(baseReporterDecorator, formatError) {
 		this.failures = 0;
 		this.skips = 0;
 		this.idx = 1;
+
+		if (config && config.outputFile) {
+			this.outputStream = fs.createWriteStream(config.outputFile, config.outputFileOptions || {
+				flags: 'w',
+				encoding: 'utf8',
+				mode: '0664'
+			});
+			this.outputStream.cork();
+		}
+
 		this.writeln('TAP version 13');
 	};
 
@@ -102,14 +113,23 @@ var TAPE = function(baseReporterDecorator, formatError) {
 		if (!this.failures) {
 			this.writeln('# ok');
 		}
+
+		if (this.outputStream) {
+			this.outputStream.uncork();
+			this.outputStream.end();
+		}
 	};
 
 	this.writeln = function(str) {
+		if (this.outputStream) {
+			this.outputStream.write(str);
+			this.outputStream.write('\n');
+		}
 		return this.write(str + '\n');
 	};
 };
 
-TAPE.$inject = ['baseReporterDecorator', 'formatError'];
+TAPE.$inject = ['baseReporterDecorator', 'formatError', 'config.tapeReporter'];
 
 module.exports = {
 	'reporter:tape': ['type', TAPE]

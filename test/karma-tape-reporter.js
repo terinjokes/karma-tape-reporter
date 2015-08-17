@@ -1,5 +1,6 @@
 'use strict';
-var test = require('tape'),
+var fs = require('fs'),
+		test = require('tape'),
 		sinon = require('sinon'),
 		Reporter = require('../')['reporter:tape'][1];
 
@@ -159,4 +160,24 @@ test('should print yaml diagnostics if included', function(t) {
 	t.equals(reporter.write.getCall(8).args[0], '# pass 0\n', 'diagnostic pass count');
 	t.equals(reporter.write.getCall(9).args[0], '# fail 1\n', 'diagnostic fail count');
 	t.end();
+});
+
+test('should write to file if configured', function(t) {
+	var reporter = new Reporter(function(instance) {
+		instance.write = sinon.spy();
+	}, formatError, { outputFile: 'out.log' });
+
+	reporter.onRunStart([]);
+	reporter.onBrowserStart(mosaic);
+	reporter.specSuccess(mosaic, {description: 'Success', time: 1, suite: ['SampleTest']});
+	reporter.onBrowserComplete(mosaic);
+	reporter.onRunComplete([]);
+
+	setTimeout(function waitForEntireFileToWrite() {
+		fs.readFile('out.log', { encoding: 'utf8' }, function(err, data) {
+			t.equals(err, null);
+			t.equals(data, 'TAP version 13\n# Other (Solaris)\nok 1 Other (Solaris) :: SampleTest :: Success\n\n1..1\n# tests 1\n# pass 1\n# fail 0\n# ok\n');
+			t.end();
+		});
+	}, 2000);
 });
