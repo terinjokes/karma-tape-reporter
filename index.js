@@ -34,21 +34,18 @@ var TAPE = function(baseReporterDecorator, formatError) {
 		this.writeln(printf('# %s', suite.name));
 
 		suite.specs.forEach(function(spec) {
-			var properties = {
+			this.writeln(printf('%(status)s %(index)d%(skipOrSpace)s%(browser)s :: %(suites)s :: %(description)s', {
 				status: spec.result,
 				index: this.idx++,
+				skipOrSpace: (spec.skipped ? ' # skip ' : ' '),
 				browser: suite.name,
 				suites: spec.suite.join(' '),
 				description: spec.description
-			};
-
-			this.writeln(printf('%(status)s %(index)d ' + (spec.skipped ? '# skip ' : '') + '%(browser)s :: %(suites)s :: %(description)s', properties));
+			}));
 
 			if (spec.failures && spec.failures.length > 0) {
 				this.writeln('  ---');
-				this.writeln(indent(yaml.safeDump({
-					failures: spec.failures
-				}), ' ', 4));
+				this.writeln(indent(yaml.safeDump({ failures: spec.failures }), ' ', 4));
 				this.writeln('  ...');
 			}
 		}, this);
@@ -74,8 +71,8 @@ var TAPE = function(baseReporterDecorator, formatError) {
 			result: 'not ok'
 		};
 
-		result.log.forEach(function(err) {
-			spec.failures.push(formatError(err, ''));
+		spec.failures = result.log.map(function(err) {
+			return formatError(err, '');
 		});
 
 		suite.specs.push(spec);
