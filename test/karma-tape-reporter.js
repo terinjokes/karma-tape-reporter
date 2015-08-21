@@ -179,5 +179,5 @@ test('should write to file if configured', function(t) {
 			t.equals(data, 'TAP version 13\n# Other (Solaris)\nok 1 Other (Solaris) :: SampleTest :: Success\n\n1..1\n# tests 1\n# pass 1\n# fail 0\n# ok\n');
 			t.end();
 		});
-	}, 2000);
+	}, 500);
 });
