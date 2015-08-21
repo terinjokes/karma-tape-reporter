@@ -21,7 +21,6 @@ var TAPE = function(baseReporterDecorator, formatError, config) {
 				encoding: 'utf8',
 				mode: '0664'
 			});
-			this.outputStream.cork();
 		}
 
 		this.writeln('TAP version 13');
@@ -115,7 +114,6 @@ var TAPE = function(baseReporterDecorator, formatError, config) {
 		}
 
 		if (this.outputStream) {
-			this.outputStream.uncork();
 			this.outputStream.end();
 		}
 	};
