@@ -173,11 +173,9 @@ test('should write to file if configured', function(t) {
 	reporter.onBrowserComplete(mosaic);
 	reporter.onRunComplete([]);
 
-	setTimeout(function waitForEntireFileToWrite() {
-		fs.readFile('out.log', { encoding: 'utf8' }, function(err, data) {
-			t.equals(err, null);
-			t.equals(data, 'TAP version 13\n# Other (Solaris)\nok 1 Other (Solaris) :: SampleTest :: Success\n\n1..1\n# tests 1\n# pass 1\n# fail 0\n# ok\n');
-			t.end();
-		});
-	}, 500);
+	fs.readFile('out.log', { encoding: 'utf8' }, function(err, data) {
+		t.equals(err, null);
+		t.equals(data, 'TAP version 13\n# Other (Solaris)\nok 1 Other (Solaris) :: SampleTest :: Success\n\n1..1\n# tests 1\n# pass 1\n# fail 0\n# ok\n');
+		t.end();
+	});
 });

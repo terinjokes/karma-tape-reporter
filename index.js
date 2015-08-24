@@ -16,11 +16,8 @@ var TAPE = function(baseReporterDecorator, formatError, config) {
 		this.idx = 1;
 
 		if (config && config.outputFile) {
-			this.outputStream = fs.createWriteStream(config.outputFile, config.outputFileOptions || {
-				flags: 'w',
-				encoding: 'utf8',
-				mode: '0664'
-			});
+			this.config = config;
+			this.outLines = [];
 		}
 
 		this.writeln('TAP version 13');
@@ -113,15 +110,20 @@ var TAPE = function(baseReporterDecorator, formatError, config) {
 			this.writeln('# ok');
 		}
 
-		if (this.outputStream) {
-			this.outputStream.end();
+		if (this.outLines) {
+			fs.writeFile(this.config.outputFile, this.outLines.join(''), this.config.outputFileOptions || {
+				encoding: 'utf8',
+				flag: 'w',
+				mode: '0664',
+			}, function(err) {
+				if (err) throw err;
+			});
 		}
 	};
 
 	this.writeln = function(str) {
-		if (this.outputStream) {
-			this.outputStream.write(str);
-			this.outputStream.write('\n');
+		if (this.outLines) {
+			this.outLines.push(str + '\n');
 		}
 		return this.write(str + '\n');
 	};
