@@ -1,10 +1,11 @@
 'use strict';
+var fs = require('fs');
 var formatUA = require('./formatUA');
 var yaml = require('js-yaml');
 var indent = require('indent-string');
 var printf = require('printf');
 
-var TAPE = function(baseReporterDecorator, formatError) {
+var TAPE = function(baseReporterDecorator, formatError, config) {
 	baseReporterDecorator(this);
 
 	this.onRunStart = function() {
@@ -13,6 +14,12 @@ var TAPE = function(baseReporterDecorator, formatError) {
 		this.failures = 0;
 		this.skips = 0;
 		this.idx = 1;
+
+		if (config && config.outputFile) {
+			this.config = config;
+			this.outLines = [];
+		}
+
 		this.writeln('TAP version 13');
 	};
 
@@ -34,21 +41,18 @@ var TAPE = function(baseReporterDecorator, formatError) {
 		this.writeln(printf('# %s', suite.name));
 
 		suite.specs.forEach(function(spec) {
-			var properties = {
+			this.writeln(printf('%(status)s %(index)d%(skipOrSpace)s%(browser)s :: %(suites)s :: %(description)s', {
 				status: spec.result,
 				index: this.idx++,
+				skipOrSpace: (spec.skipped ? ' # skip ' : ' '),
 				browser: suite.name,
 				suites: spec.suite.join(' '),
 				description: spec.description
-			};
-
-			this.writeln(printf('%(status)s %(index)d ' + (spec.skipped ? '# skip ' : '') + '%(browser)s :: %(suites)s :: %(description)s', properties));
+			}));
 
 			if (spec.failures && spec.failures.length > 0) {
 				this.writeln('  ---');
-				this.writeln(indent(yaml.safeDump({
-					failures: spec.failures
-				}), ' ', 4));
+				this.writeln(indent(yaml.safeDump({ failures: spec.failures }), ' ', 4));
 				this.writeln('  ...');
 			}
 		}, this);
@@ -74,8 +78,8 @@ var TAPE = function(baseReporterDecorator, formatError) {
 			result: 'not ok'
 		};
 
-		result.log.forEach(function(err) {
-			spec.failures.push(formatError(err, ''));
+		spec.failures = result.log.map(function(err) {
+			return formatError(err, '');
 		});
 
 		suite.specs.push(spec);
@@ -105,14 +109,27 @@ var TAPE = function(baseReporterDecorator, formatError) {
 		if (!this.failures) {
 			this.writeln('# ok');
 		}
+
+		if (this.outLines) {
+			fs.writeFile(this.config.outputFile, this.outLines.join(''), this.config.outputFileOptions || {
+				encoding: 'utf8',
+				flag: 'w',
+				mode: '0664',
+			}, function(err) {
+				if (err) throw err;
+			});
+		}
 	};
 
 	this.writeln = function(str) {
+		if (this.outLines) {
+			this.outLines.push(str + '\n');
+		}
 		return this.write(str + '\n');
 	};
 };
 
-TAPE.$inject = ['baseReporterDecorator', 'formatError'];
+TAPE.$inject = ['baseReporterDecorator', 'formatError', 'config.tapeReporter'];
 
 module.exports = {
 	'reporter:tape': ['type', TAPE]
