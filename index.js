@@ -4,6 +4,18 @@ var yaml = require('js-yaml');
 var indent = require('indent-string');
 var printf = require('printf');
 
+var colors = {
+	black: '\x1b[30m',
+	red: '\x1b[31m',
+	green: '\x1b[32m',
+	yellow: '\x1b[33m',
+	blue: '\x1b[34m',
+	magenta: '\x1b[35m',
+	cyan: '\x1b[36m',
+	white: '\x1b[37m',
+	default: '\x1b[39m',
+};
+
 var TAPE = function(baseReporterDecorator, formatError) {
 	baseReporterDecorator(this);
 
@@ -95,20 +107,20 @@ var TAPE = function(baseReporterDecorator, formatError) {
 
 	this.onRunComplete = function() {
 		this.writeln(printf('\n1..%d', this.total));
-		this.writeln(printf('# tests %d', this.total));
-		this.writeln(printf('# pass %d', this.total - this.failures));
+		this.writeln(printf('# tests %d', this.total), colors.cyan);
+		this.writeln(printf('# pass %d', this.total - this.failures), colors.green);
 		if (this.skips) {
-			this.writeln(printf('# skip %d', this.skips));
+			this.writeln(printf('# skip %d', this.skips), colors.yellow);
 		}
-		this.writeln(printf('# fail %d', this.failures));
+		this.writeln(printf('# fail %d', this.failures), colors.red);
 
 		if (!this.failures) {
 			this.writeln('# ok');
 		}
 	};
 
-	this.writeln = function(str) {
-		return this.write(str + '\n');
+	this.writeln = function(str, color = colors.default) {
+		return this.write(color , str + '\n', '\x1b[0m');
 	};
 };
 
