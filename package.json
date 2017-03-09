@@ -7,18 +7,18 @@
     "url": "https://github.com/terinjokes/karma-tape-reporter/issues"
   },
   "dependencies": {
-    "indent-string": ">=1.2.0 <2.0.0-0",
+    "indent-string": ">=3.1.0",
     "js-yaml": "git+https://github.com/terinjokes/js-yaml.git#block-literal-newlines-preserved",
     "printf": ">=0.2.0 <0.3.0-0",
     "useragent": ">=2.0.9 <3.0.0-0"
   },
   "devDependencies": {
-    "argg": "0.0.1",
-    "codeclimate-test-reporter": "0.0.3",
-    "istanbul": ">=0.3.0 <0.4.0-0",
+    "argg": "0.0.2",
+    "codeclimate-test-reporter": "0.4.1",
+    "istanbul": ">=0.4.5",
     "rimraf": ">=2.2.8 <3.0.0-0",
     "sinon": ">=1.10.3 <2.0.0-0",
-    "tape": ">=2.14.0 <3.0.0-0"
+    "tape": ">=4.6.3"
   },
   "homepage": "https://github.com/terinjokes/karma-tape-reporter",
   "keywords": [
